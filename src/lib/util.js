@@ -2,7 +2,7 @@ import { TRAVEL_MODE, TRANSIT_MODE, ROAD_TYPE } from './constants'
 
 /**
  * Estimated average speeds of travel using different travel modes based on Nigerian
- * speed limits
+ * speed limits. Speeds are in KM/hr.
  **/
 const SPEED_ESTIMATES = (() => {
   const ESTIMATES = {}

@@ -142,6 +142,9 @@ export default class CatchmentAreaGenerator {
     travelOpts.roadType = roadType || travelOpts.roadType
     travelOpts.transitMode = transitMode || travelOpts.transitMode
 
+    // convert travelTime from minutes to hours
+    travelTime = travelTime / 60
+
     const maxDistance = Util.computeMaxDistance(travelTime, Util.estimateSpeed(travelOpts))
 
     for (let source of sources) {
