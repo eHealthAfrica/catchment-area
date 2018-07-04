@@ -1,0 +1,31 @@
+{
+  "name": "catchment-area",
+  "version": "1.0.0",
+  "description": "A utility for computing the catchment area of given source and destination points. A source may correspond to a health facility while the destinations (catchment areas) are the settlements served by the facility",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/eHealthAfrica/catchment-area.git"
+  },
+  "keywords": [
+    "Clustering",
+    "KDTree",
+    "k-nearest-neighbor",
+    "gis"
+  ],
+  "author": "Abraham Yusuf <abraham.yusuf@ehealthnigeria.org>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/eHealthAfrica/catchment-area/issues"
+  },
+  "homepage": "https://github.com/eHealthAfrica/catchment-area#readme",
+  "dependencies": {
+    "@turf/turf": "^5.1.6",
+    "geokdbush": "^1.1.0",
+    "kdbush": "^2.0.1",
+    "ramda": "^0.25.0"
+  }
+}
