@@ -4,19 +4,23 @@ import { TRAVEL_MODE, TRANSIT_MODE, ROAD_TYPE } from './constants'
  * Estimated average speeds of travel using different travel modes based on Nigerian
  * speed limits
  **/
-const SPEED_ESTIMATES = {
-  `${TRAVEL_MODE.DRIVING}`: {
-    `${ROAD_TYPE.PRIMARY}`: 50,
-    `${ROAD_TYPE.SECONDARY}`: 80,
-    `${ROAD_TYPE.HIGHWAY}`: 100
-  },
-  `${TRAVEL_MODE.WALKING}`: 5,
-  `${TRAVEL_MODE.BICYCLING}`: 15,
-  `${TRAVEL_MODE.TRANSIT}`: {
-    `${TRANSIT_MODE.BUS}`: 90,
-    `${TRANSIT_MODE.RAIL}`: 120
-  }
-}
+const SPEED_ESTIMATES = (() => {
+  const ESTIMATES = {}
+
+  ESTIMATES[TRAVEL_MODE.DRIVING] = {}
+  ESTIMATES[TRAVEL_MODE.DRIVING][ROAD_TYPE.PRIMARY] = 50
+  ESTIMATES[TRAVEL_MODE.DRIVING][ROAD_TYPE.SECONDARY] = 80
+  ESTIMATES[TRAVEL_MODE.DRIVING][ROAD_TYPE.HIGHWAY] = 100
+
+  ESTIMATES[TRAVEL_MODE.WALKING] = 5
+  ESTIMATES[TRAVEL_MODE.BICYCLING] = 15
+
+  ESTIMATES[TRAVEL_MODE.TRANSIT] = {}
+  ESTIMATES[TRAVEL_MODE.TRANSIT][TRANSIT_MODE.BUS] = 90
+  ESTIMATES[TRAVEL_MODE.TRANSIT][TRANSIT_MODE.RAIL] = 120
+
+  return ESTIMATES
+})()
 
 /**
  * Default options for `travelOpts` parameter of `estimateSpeed` function
@@ -56,8 +60,7 @@ export const estimateSpeed = (travelOpts = defaultTravelOpts) => {
   return speed
 }
 
-
-export const computeMaxDistance(travelTime, travelSpeed) => travelSpeed * travelTime
+export const computeMaxDistance = (travelTime, travelSpeed) => travelSpeed * travelTime
 
 export default {
   estimateSpeed,

@@ -1,4 +1,5 @@
-import * as turf from '@turf/turf'
+import kdbush from 'kdbush'
+import * as geokdbush from 'geokdbush'
 import * as R from 'ramda'
 import { ROAD_TYPE, TRANSIT_MODE, TRAVEL_MODE } from './constants'
 import Util from './util'
@@ -107,7 +108,11 @@ export default class CatchmentAreaGenerator {
       return this.makeCachmentArea(source, destinations)
     }
 
-    return this.makeCachmentArea(null, null) // @todo: implement
+    const [long, lat] = source
+    const tree = kdbush(destinations)
+    const nearest = geokdbush.around(tree, long, lat, clusterSize, distance)
+
+    return this.makeCachmentArea(source, nearest)
   }
 
   /**
