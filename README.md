@@ -8,7 +8,7 @@ This library has not yet been published to npm or yarnpkgs yet. Upon publication
 ```javascript
 import CatchmentAreaGenerator from 'catchment-area'
 
-const travelTime = 50 / 60 // 50 minutes === 50 / 60 hours
+const travelTime = 50 // 50 minutes
 const generator = new CatchmentAreaGenerator(featureCollection)
 const catchmentAreas = generator.run(travelTime)
 
