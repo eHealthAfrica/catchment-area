@@ -131,7 +131,7 @@ export class CatchmentAreaGenerator {
 
         let catchmentAreaForSource = this.generate(maxDistance, source, availableDestinations, clusterSize)
 
-        catchmentAreas.push(Util.makeCatchmentArea(driveMinutes, source, catchmentAreaForSource))
+        catchmentAreas.push(Util.makeCatchmentArea(driveMinutes, maxDistance, source, catchmentAreaForSource))
       }
     }
 

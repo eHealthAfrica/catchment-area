@@ -112,6 +112,10 @@ export const catchmentAreaSchema = {
       type: 'number',
       required: true
     },
+    estimatedDistance: {
+      type: 'number',
+      required: true
+    },
     source: {
       type: 'array',
       required: true,
@@ -121,6 +125,9 @@ export const catchmentAreaSchema = {
         type: 'number',
         required: true
       }
+    },
+    destinations: {
+      '$ref': '/Coordinates'
     }
   }
 }

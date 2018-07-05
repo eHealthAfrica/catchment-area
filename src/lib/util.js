@@ -93,9 +93,10 @@ export const validateCatchmentArea = data => {
  * @param {Array<turf.Coord>} destinations a list of destination coordinates in the form [[lon, lat],...]
  * @return {Object}
  **/
-export const makeCatchmentArea = (driveTime, source, destinations) => {
+export const makeCatchmentArea = (driveTime, estimatedDistance, source, destinations) => {
   return {
     driveTime,
+    estimatedDistance,
     source,
     destinations
   }
