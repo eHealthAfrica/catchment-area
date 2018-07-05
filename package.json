@@ -4,9 +4,8 @@
   "description": "A utility for computing the catchment area of given source and destination points. A source may correspond to a health facility while the destinations (catchment areas) are the settlements served by the facility",
   "main": "index.js",
   "scripts": {
-    "dev": "webpack --mode=development",
-    "build": "webpack --mode=production",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "parcel build ./src/index.js --target node --out-dir ./ --out-file index.js",
+    "test": "node test/index.js"
   },
   "repository": {
     "type": "git",
@@ -31,8 +30,17 @@
     "ramda": "^0.25.0"
   },
   "devDependencies": {
-    "webpack": "^4.14.0",
-    "webpack-cli": "^3.0.8",
-    "webpack-merge": "^4.1.3"
+    "babel-cli": "^6.26.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "parcel-bundler": "^1.9.4"
+  },
+  "babel": {
+    "presets": [
+      "env"
+    ],
+    "plugins": [
+      "transform-object-rest-spread"
+    ]
   }
 }

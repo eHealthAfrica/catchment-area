@@ -147,3 +147,5 @@ typings/
 .serverless
 
 dist
+/index.js
+/index.map

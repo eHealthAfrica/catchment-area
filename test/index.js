@@ -1,4 +1,4 @@
-const lib = require('../dist/entry.node.js')
+const lib = require('../index.js')
 
 const opts = {
   sources: [0, 1],
