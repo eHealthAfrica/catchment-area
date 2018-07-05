@@ -1,64 +1,44 @@
 import kdbush from 'kdbush'
 import * as geokdbush from 'geokdbush'
 import * as R from 'ramda'
-import { ROAD_TYPE, TRANSIT_MODE, TRAVEL_MODE } from './constants'
-import Util from './util'
+import { ROAD_TYPE, TRANSIT_MODE, TRAVEL_MODE } from './constants.js'
+import * as Util from './util.js'
 
-export default class CatchmentAreaGenerator {
-  constructor (featureCollection) {
-    this.featureCollection = featureCollection
+export class CatchmentAreaGenerator {
+  constructor (configObject) {
+    this.config = configObject
     this.run = this.run.bind(this)
     this.generate = this.generate.bind(this)
   }
 
   /**
-   * Extract coordinates of source points from a given feature collection
+   * Get coordinates of source points
    *
-   * @param {turf.FeatureCollection} featureCollection
    * @return {Array<turf.Coord>} an array of coordinates eg [[lon, lat],...]
    **/
-  static extractSources (featureCollection) {
-    const sources = []
-    const fcSources = featureCollection.sources || []
-    const fcCoordinates = featureCollection.coordinates || []
-
-    for (let source of fcSources) {
-      sources.push(fcCoordinates[source])
-    }
-
-    return sources
+  get sources () {
+    Util.validateOptions(this.config)
+    return this.config.sources.map(source => this.config.coordinates[source])
   }
 
   /**
-   * Extract coordinates of destination points from a given feature collection
+   * Get coordinates of destination points
    *
-   * @param {turf.FeatureCollection} featureCollection
    * @return {Array<turf.Coord>} an array of coordinates eg [[lon, lat],...]
    **/
-  static extractDestinations (featureCollection) {
-    const destinations = []
-    const fcDestinations = featureCollection.destinations || []
-    const fcCoordinates = featureCollection.coordinates || []
-
-    for (let destination of fcDestinations) {
-      destinations.push(fcCoordinates[destination])
-    }
-
-    return destinations
+  get destinations () {
+    Util.validateOptions(this.config)
+    return this.config.destinations.map(destination => this.config.coordinates[destination])
   }
 
   /**
-   * Create a catchment area object. A catchment area is an object having keys `source` and `destinations`
-   * A `source` or `destination` is just a pair [lon, lat] viz, a turf.Coord
+   * Get drive times for which catchment areas are to be computed
    *
-   * @param {turf.Coord} source the source whose catchment area includes all point in `destinations` parameter
-   * @param {Array<turf.Coord>} destinations an array of destination points
+   * @return {Array<Number>} a list of drive times in minutes
    **/
-  static makeCachmentArea (source, destinations) {
-    return {
-      source,
-      destinations
-    }
+  get driveTimes () {
+    Util.validateOptions(this.config)
+    return this.config.drivetimes
   }
 
   /**
@@ -67,7 +47,7 @@ export default class CatchmentAreaGenerator {
    * @param {Array<Object>} catchmentAreas an array of catchment areas
    * @return {Array<turf.Coord>}
    **/
-  static getCactchedPoints (catchmentAreas) {
+  getCatchedPoints (catchmentAreas) {
     return catchmentAreas.reduce(
       (catchedPoints, catchmentArea) => catchedPoints.concat(catchmentArea.destinations),
       []
@@ -82,7 +62,7 @@ export default class CatchmentAreaGenerator {
    * @param {Array<turf.Coord>} catchedPoints
    * @return {Array<turf.Coord>}
    **/
-  static getUncatchedPoints (allPoints, catchedPoints) {
+  getUncatchedPoints (allPoints, catchedPoints) {
     return R.differenceWith((allPointsPoint, catchedPointsPoint) => {
       const [long1, lat1] = allPointsPoint
       const [long2, lat2] = catchedPointsPoint
@@ -105,20 +85,19 @@ export default class CatchmentAreaGenerator {
     // This ignores the max distance so some destinations may be farther away than expected but avoids
     // leaving any destination uncatched.
     if (destinations.length <= clusterSize) {
-      return this.makeCachmentArea(source, destinations)
+      return destinations
     }
 
     const [long, lat] = source
     const tree = kdbush(destinations)
     const nearest = geokdbush.around(tree, long, lat, clusterSize, distance)
 
-    return this.makeCachmentArea(source, nearest)
+    return nearest
   }
 
   /**
    * Run the CatchmentAreaGenerator
    *
-   * @param {Number} travelTime the time in minutes for which to generate catchment areas
    * @param {String} travelMode the mode of transport, possible values are defined in `TRAVEL_MODE` enum
    * @param {String} roadType the type of road travelled, possible values are defined in `ROAD_TYPE` enum
    * @param {String} transitMode used when travelMode is `TRAVEL_MODE.TRANSIT`, possible values are defined in `TRANSIT_MODE` enum
@@ -126,12 +105,11 @@ export default class CatchmentAreaGenerator {
    *                         `source` is the coordinate of the source while destinations is a list of coordinates of points
    *                         in the `source`'s catchment area
    **/
-  run (travelTime, travelMode = TRAVEL_MODE.DRIVING, roadType = ROAD_TYPE.SECONDARY, transitMode = TRANSIT_MODE.BUS) {
-    const sources = this.extractSources(this.featureCollection)
-    const destinations = this.extractDestinations(this.featureCollection)
+  run (travelMode = TRAVEL_MODE.DRIVING, roadType = ROAD_TYPE.SECONDARY, transitMode = TRANSIT_MODE.BUS) {
+    const [sources, destinations, driveTimes] = [this.sources, this.destinations, this.driveTimes]
 
     if (!sources.length) {
-      throw new Error('The feature collection must contain at least one source!')
+      throw new Error('The catchment area generator config object must contain at least one source!')
     }
 
     const catchmentAreas = []
@@ -142,16 +120,19 @@ export default class CatchmentAreaGenerator {
     travelOpts.roadType = roadType || travelOpts.roadType
     travelOpts.transitMode = transitMode || travelOpts.transitMode
 
-    // convert travelTime from minutes to hours
-    travelTime = travelTime / 60
+    for (let driveMinutes of driveTimes) {
+      // convert drive time from minutes to hours
+      const driveHours = driveMinutes / 60
+      const maxDistance = Util.computeMaxDistance(driveHours, Util.estimateSpeed(travelOpts))
 
-    const maxDistance = Util.computeMaxDistance(travelTime, Util.estimateSpeed(travelOpts))
+      for (let source of sources) {
+        let catchedPoints = this.getCatchedPoints(catchmentAreas)
+        let availableDestinations = this.getUncatchedPoints(destinations, catchedPoints)
 
-    for (let source of sources) {
-      let catchedPoints = this.getCactchedPoints(catchmentAreas)
-      let availableDestinations = this.getUncatchedPoints(destinations, catchedPoints)
+        let catchmentAreaForSource = this.generate(maxDistance, source, availableDestinations, clusterSize)
 
-      catchmentAreas.push(this.generate(maxDistance, source, availableDestinations, clusterSize))
+        catchmentAreas.push(Util.makeCatchmentArea(driveMinutes, source, catchmentAreaForSource))
+      }
     }
 
     return catchmentAreas

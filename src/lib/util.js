@@ -1,4 +1,6 @@
-import { TRAVEL_MODE, TRANSIT_MODE, ROAD_TYPE } from './constants'
+import * as JSONSchema from 'jsonschema'
+import { TRAVEL_MODE, TRANSIT_MODE, ROAD_TYPE } from './constants.js'
+import { allSchemas, generatorOptionsSchema, catchmentAreaSchema } from './schema.js'
 
 /**
  * Estimated average speeds of travel using different travel modes based on Nigerian
@@ -62,7 +64,39 @@ export const estimateSpeed = (travelOpts = defaultTravelOpts) => {
 
 export const computeMaxDistance = (travelTime, travelSpeed) => travelSpeed * travelTime
 
-export default {
-  estimateSpeed,
-  computeMaxDistance
+const schemaValidator = allSchemas.reduce((validator, schema) => {
+  validator.addSchema(schema, schema.id)
+  return validator
+}, new JSONSchema.Validator())
+
+export const validateOptions = data => {
+  try {
+    schemaValidator.validate(data, generatorOptionsSchema)
+  } catch (error) {
+    throw new Error('Invalid configuration object!')
+  }
+}
+
+export const validateCatchmentArea = data => {
+  try {
+    schemaValidator.validate(data, catchmentAreaSchema)
+  } catch (error) {
+    throw new Error('Invalid catchment area object!')
+  }
+}
+
+/**
+ * Creates a new catchment area object from the given parameters
+ *
+ * @param {Number} driveTime
+ * @param {turf.Coord} source an array of coordinates of the source point i.e. [lon, lat]
+ * @param {Array<turf.Coord>} destinations a list of destination coordinates in the form [[lon, lat],...]
+ * @return {Object}
+ **/
+export const makeCatchmentArea = (driveTime, source, destinations) => {
+  return {
+    driveTime,
+    source,
+    destinations
+  }
 }

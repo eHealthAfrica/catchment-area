@@ -27,9 +27,3 @@ export const ROAD_TYPE = {
   SECONDARY: 'secondary',
   HIGHWAY: 'highway'
 }
-
-export default {
-  TRAVEL_MODE,
-  TRANSIT_MODE,
-  ROAD_TYPE
-}

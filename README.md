@@ -8,9 +8,7 @@ This library has not yet been published to npm or yarnpkgs yet. Upon publication
 ```javascript
 import CatchmentAreaGenerator from 'catchment-area'
 
-const travelTime = 50 // 50 minutes
-
-const inputObject = {
+const configObject = {
   "sources": [0, 1],
   "destinations": [2, 3, 4, 5, 6],
   "coordinates": [
@@ -26,8 +24,8 @@ const inputObject = {
   "drivetimes": [10]
 }
 
-const generator = new CatchmentAreaGenerator(inputObject)
-const catchmentAreas = generator.run(travelTime)
+const generator = new CatchmentAreaGenerator(configObject)
+const catchmentAreas = generator.run()
 
 console.log(catchmentAreas)
 ```
