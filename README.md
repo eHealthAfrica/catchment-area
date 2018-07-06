@@ -1,4 +1,4 @@
-# About `catchment-area`
+# `catchment-area`
 `catchment-area` is a node library for generating catchment areas based on a set of sources and associated destinations. A use case for this library is generating catchment areas where the sources are health facilities and destinations are settlements.
 
 ## Installation
