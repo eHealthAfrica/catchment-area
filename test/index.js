@@ -1,6 +1,22 @@
 const expect = require('chai').expect
 const { Util, CatchmentAreaGenerator } = require('../index.js')
 
+const configObject = {
+  sources: [0, 1],
+  destinations: [2, 3, 4, 5, 6],
+  coordinates: [
+    [8.521614074707031, 12.041335177559377],
+    [8.546504974365234, 11.986935141127049],
+    [8.402481079101562, 11.965776606631184],
+    [8.450889587402344, 12.078938641761814],
+    [8.558778762817383, 11.999024987663574],
+    [8.549938201904297, 12.007420395469195],
+    [8.554229736328125, 11.956876093184725]
+  ],
+  profile: 'car',
+  drivetimes: [10]
+}
+
 describe('Util', function () {
   describe('#computeMaxDistance()', function () {
     it('should compute correct distance', function () {
@@ -31,22 +47,6 @@ describe('Util', function () {
     })
   })
 })
-
-const configObject = {
-  sources: [0, 1],
-  destinations: [2, 3, 4, 5, 6],
-  coordinates: [
-    [8.521614074707031, 12.041335177559377],
-    [8.546504974365234, 11.986935141127049],
-    [8.402481079101562, 11.965776606631184],
-    [8.450889587402344, 12.078938641761814],
-    [8.558778762817383, 11.999024987663574],
-    [8.549938201904297, 12.007420395469195],
-    [8.554229736328125, 11.956876093184725]
-  ],
-  profile: 'car',
-  drivetimes: [10]
-}
 
 describe('CatchmentAreaGenerator', function () {
   describe('#getters', function () {
@@ -125,5 +125,13 @@ describe('CatchmentAreaGenerator', function () {
       expect(uncatchedPoints).to.have.lengthOf(2)
       expect(uncatchedPoints).to.deep.equal(expectedUncatchedPoints)
     })
+  })
+
+  describe('#generate', function () {
+    it('should generate a catchment area for a given source')
+  })
+
+  describe('#run', function () {
+    it('should generate catchment areas for all available sources')
   })
 })
