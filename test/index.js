@@ -1,4 +1,5 @@
 const expect = require('chai').expect
+const geokdbush = require('geokdbush')
 const { Util, CatchmentAreaGenerator } = require('../index.js')
 
 const configObject = {
@@ -128,10 +129,37 @@ describe('CatchmentAreaGenerator', function () {
   })
 
   describe('#generate', function () {
-    it('should generate a catchment area for a given source')
+    it('should generate a catchment area for a given source', function () {
+      const distance = 80 * (configObject.drivetimes[0] / 60)
+      const source = configObject.coordinates[configObject.sources[0]]
+      const destinations = configObject.destinations.map(destination => configObject.coordinates[destination])
+      const clusterSize = Math.floor(configObject.destinations.length / configObject.sources.length)
+      const generator = new CatchmentAreaGenerator(configObject, 80)
+      const destinationsInCatchment = generator.generate(distance, source, destinations, clusterSize)
+
+      expect(destinationsInCatchment).to.be.an('array').that.is.not.empty
+      destinationsInCatchment.map(destination => {
+        let [srcLon, srcLat] = source
+        let [destLon, destLat] = destination
+        let actualDistance = geokdbush.distance(srcLon, srcLat, destLon, destLat)
+
+        expect(actualDistance).to.be.at.most(distance)
+      })
+    })
   })
 
   describe('#run', function () {
-    it('should generate catchment areas for all available sources')
+    it('should generate catchment areas for all available sources', function () {
+      const travelSpeed = 100 // kilometers per hour
+      const drivetime = configObject.drivetimes[0] // drive time in minutes
+      const distance = travelSpeed * (drivetime / 60)
+      const generator = new CatchmentAreaGenerator(configObject, travelSpeed)
+      const catchmentAreas = generator.run()
+
+      expect(catchmentAreas).to.have.lengthOf(2)
+      catchmentAreas.map(catchmentArea => {
+        return expect(catchmentArea.distance).to.equal(distance)
+      })
+    })
   })
 })
