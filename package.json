@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "parcel build ./src/index.ts --target node --out-dir ./ --out-file index.js",
-    "test": "node test/index.js"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
