@@ -2,11 +2,12 @@
 `catchment-area` is a node library for generating catchment areas based on a set of sources and associated destinations. A use case for this library is generating catchment areas where the sources are health facilities and destinations are settlements.
 
 ## Installation
-This library has not yet been published to npm or yarnpkgs yet. Upon publication however it may be installed with npm or yarn using either `npm i catchment-area` or `yarn add catchment-area`
+`npm i catchment-area` or `yarn add catchment-area`
 
 ## Usage
 ```javascript
 import CatchmentAreaGenerator from 'catchment-area'
+// const { CatchmentAreaGenerator } = require('catchment-area')
 
 const configObject = {
   "sources": [0, 1],
@@ -21,10 +22,11 @@ const configObject = {
     [8.554229736328125, 11.956876093184725]
   ],
   "profile":"car",
-  "drivetimes": [10]
+  "drivetimes": [10]                          // in Minutes
 }
+const travelSpeed = 80                        // in Kilometers per hour (km/hr)
 
-const generator = new CatchmentAreaGenerator(configObject)
+const generator = new CatchmentAreaGenerator(configObject, travelSpeed)
 const catchmentAreas = generator.run()
 
 console.log(catchmentAreas)
